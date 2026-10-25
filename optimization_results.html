@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US100 IBS Plateau Optimization & Ablation Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0b1120; color: #f8fafc; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+</head>
+<body class="antialiased p-4 md:p-8">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              Ablation Complete
+            </span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+              Zero T-Bill Yield Control (0.0% RF)
+            </span>
+          </div>
+          <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
+            IBS Plateau Optimization & Shock-Damped ADR Ablation
+          </h1>
+          <p class="text-sm text-slate-400 mt-1">
+            Nasdaq-100 Cash Index (<code class="text-cyan-400">^NDX</code>) Mark-to-Market Evaluation (2006–2026)
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <div class="text-xs uppercase tracking-wider text-slate-400">Decision Gate Verdict</div>
+            <div class="text-base font-bold text-emerald-400 flex items-center gap-1 justify-end">
+              <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              KEEP SHOCK-DAMPED ADR
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stat Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+        <div class="text-xs text-slate-400 uppercase tracking-wider">Optimal Centroid</div>
+        <div class="text-xl font-bold text-cyan-400 mt-1">In: 0.10 | Out: 0.70</div>
+        <div class="text-xs text-emerald-400 mt-0.5">Max Hold: 6 bars (Exit on Peak)</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+        <div class="text-xs text-slate-400 uppercase tracking-wider">Strategy A Calmar</div>
+        <div class="text-xl font-bold text-emerald-400 mt-1">0.91 <span class="text-xs font-normal text-emerald-400/80">(+5.81%)</span></div>
+        <div class="text-xs text-slate-400 mt-0.5">MaxDD: -11.42% (vs -12.79%)</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+        <div class="text-xs text-slate-400 uppercase tracking-wider">WFE Efficiency</div>
+        <div class="text-xl font-bold text-purple-400 mt-1">71.40%</div>
+        <div class="text-xs text-purple-400/80 mt-0.5">86.7% Positive OOS Folds (13/15)</div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+        <div class="text-xs text-slate-400 uppercase tracking-wider">A+B 3x Ensemble</div>
+        <div class="text-xl font-bold text-amber-400 mt-1">$570,060.95</div>
+        <div class="text-xs text-amber-400/80 mt-0.5">CAGR: 21.59% | Sharpe: 1.06</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex border-b border-slate-800 gap-2">
+      <button onclick="switchTab('tab-comparison')" id="btn-tab-comparison" class="tab-btn px-4 py-2.5 font-medium text-sm rounded-t-lg border-b-2 border-emerald-500 text-emerald-400 bg-slate-900">
+        ⚖️ Side-by-Side Ablation Matrix
+      </button>
+      <button onclick="switchTab('tab-stage2')" id="btn-tab-stage2" class="tab-btn px-4 py-2.5 font-medium text-sm rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-white">
+        🚀 Stage 2: Combined 100/100 Overlay
+      </button>
+      <button onclick="switchTab('tab-ensemble')" id="btn-tab-ensemble" class="tab-btn px-4 py-2.5 font-medium text-sm rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-white">
+        🏔️ 3D Plateau & Ensemble Nodes
+      </button>
+      <button onclick="switchTab('tab-wfo')" id="btn-tab-wfo" class="tab-btn px-4 py-2.5 font-medium text-sm rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-white">
+        🔄 Rolling Walk-Forward (15 Folds)
+      </button>
+    </div>
+
+    <!-- Tab 1: Side-by-Side Ablation Matrix -->
+    <div id="tab-comparison" class="tab-content space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+        <div class="p-5 border-b border-slate-800 flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-lg text-white">Stage 1: Strategy A (IBS Solo) Ablation</h3>
+            <p class="text-xs text-slate-400">Comparing Shock-Damped Effective ADR vs. Standard Raw ADR sizing (Zero T-Bill Yield)</p>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Gate Passed: +5.81% Calmar</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs uppercase bg-slate-950/70 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="px-6 py-3.5 font-semibold">Evaluation Metric</th>
+                <th class="px-6 py-3.5 font-semibold text-emerald-400">Track 1: Shock-Damped ADR (ON)</th>
+                <th class="px-6 py-3.5 font-semibold text-slate-400">Track 2: Standard Raw ADR (OFF)</th>
+                <th class="px-6 py-3.5 font-semibold">Ablation Delta / Verdict</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Optimal Plateau Centroid</td>
+                <td class="px-6 py-3.5 font-bold text-cyan-400">(0.10, 0.70, 6)</td>
+                <td class="px-6 py-3.5 font-bold text-slate-300">(0.10, 0.70, 6)</td>
+                <td class="px-6 py-3.5 text-xs text-emerald-400 font-medium">Identical structural peak</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">3D Plateau Score J(θ*)</td>
+                <td class="px-6 py-3.5 font-bold text-emerald-400">1.1300</td>
+                <td class="px-6 py-3.5">1.1251</td>
+                <td class="px-6 py-3.5 text-xs text-emerald-400 font-semibold">+0.0049 (Flatter/More robust)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Local Neighborhood Std (σ_N)</td>
+                <td class="px-6 py-3.5">0.0562</td>
+                <td class="px-6 py-3.5">0.0543</td>
+                <td class="px-6 py-3.5 text-xs text-slate-400">Zero cliff risk on both</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Rolling WFO Mean IS Sharpe</td>
+                <td class="px-6 py-3.5">1.4512</td>
+                <td class="px-6 py-3.5">1.4658</td>
+                <td class="px-6 py-3.5 text-xs text-slate-400">Balanced training baseline</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Rolling WFO Mean OOS Sharpe</td>
+                <td class="px-6 py-3.5 font-bold text-emerald-400">1.0362</td>
+                <td class="px-6 py-3.5">1.0197</td>
+                <td class="px-6 py-3.5 text-xs text-emerald-400 font-semibold">+1.62% out-of-sample edge</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Walk-Forward Efficiency (WFE)</td>
+                <td class="px-6 py-3.5 font-bold text-purple-400">71.40%</td>
+                <td class="px-6 py-3.5">69.56%</td>
+                <td class="px-6 py-3.5 text-xs text-purple-400 font-semibold">+1.84% pts (High robustness)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Positive OOS Folds (%)</td>
+                <td class="px-6 py-3.5 font-bold text-emerald-400">86.7% (13/15)</td>
+                <td class="px-6 py-3.5">86.7% (13/15)</td>
+                <td class="px-6 py-3.5 text-xs text-emerald-400 font-medium">Profitability across 15 market cycles</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Strategy A Solo Max Drawdown</td>
+                <td class="px-6 py-3.5 font-bold text-emerald-400">-11.42%</td>
+                <td class="px-6 py-3.5 text-rose-400">-12.79%</td>
+                <td class="px-6 py-3.5 text-xs text-emerald-400 font-semibold">+1.37% pts drawdown reduction</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Strategy A Solo Calmar Ratio</td>
+                <td class="px-6 py-3.5 font-bold text-emerald-400">0.91</td>
+                <td class="px-6 py-3.5">0.86</td>
+                <td class="px-6 py-3.5 text-xs text-emerald-400 font-bold">+5.81% (Exceeds 5% Gate)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Strategy A Solo Sharpe (0% RF)</td>
+                <td class="px-6 py-3.5 font-bold text-cyan-400">1.27</td>
+                <td class="px-6 py-3.5">1.26</td>
+                <td class="px-6 py-3.5 text-xs text-cyan-400">+0.01 pure alpha</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Strategy A Total Trades</td>
+                <td class="px-6 py-3.5 font-semibold text-slate-200">476</td>
+                <td class="px-6 py-3.5 font-semibold text-slate-200">476</td>
+                <td class="px-6 py-3.5 text-xs text-slate-400">Zero trade starvation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Stage 2 Combined Overlay -->
+    <div id="tab-stage2" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+        <div class="p-5 border-b border-slate-800">
+          <h3 class="font-bold text-lg text-white">Stage 2: Combined 100/100 Overlay (IBS + 12M Momentum)</h3>
+          <p class="text-xs text-slate-400">Compounding both streams with flat 1.25% risk per ADR and static 2.0x leverage cap (Starting with $10k)</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs uppercase bg-slate-950/70 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="px-6 py-3.5 font-semibold">Overlay Metric</th>
+                <th class="px-6 py-3.5 font-semibold text-emerald-400">A+B Ideal Centroid (Damped ON)</th>
+                <th class="px-6 py-3.5 font-semibold text-slate-400">A+B Ideal Centroid (Damped OFF)</th>
+                <th class="px-6 py-3.5 font-semibold text-amber-400">A+B 3x Ensemble (Damped ON)</th>
+                <th class="px-6 py-3.5 font-semibold text-slate-400">A+B 3x Ensemble (Damped OFF)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Final Portfolio Equity</td>
+                <td class="px-6 py-3.5 font-bold text-emerald-400">$520,721.42</td>
+                <td class="px-6 py-3.5 font-bold text-slate-300">$584,271.88</td>
+                <td class="px-6 py-3.5 font-bold text-amber-400">$570,060.95</td>
+                <td class="px-6 py-3.5 font-bold text-slate-300">$640,157.73</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">CAGR (%)</td>
+                <td class="px-6 py-3.5 font-semibold">21.05%</td>
+                <td class="px-6 py-3.5">21.73%</td>
+                <td class="px-6 py-3.5 font-semibold text-amber-400">21.59%</td>
+                <td class="px-6 py-3.5">22.27%</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Annualized Volatility</td>
+                <td class="px-6 py-3.5 text-cyan-400">20.35%</td>
+                <td class="px-6 py-3.5">21.13%</td>
+                <td class="px-6 py-3.5 text-cyan-400">20.52%</td>
+                <td class="px-6 py-3.5">21.31%</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Sharpe Ratio (0% RF)</td>
+                <td class="px-6 py-3.5 font-bold text-emerald-400">1.04</td>
+                <td class="px-6 py-3.5">1.04</td>
+                <td class="px-6 py-3.5 font-bold text-amber-400">1.06</td>
+                <td class="px-6 py-3.5">1.05</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Sortino Ratio</td>
+                <td class="px-6 py-3.5 font-semibold">1.50</td>
+                <td class="px-6 py-3.5">1.50</td>
+                <td class="px-6 py-3.5 font-semibold text-amber-400">1.53</td>
+                <td class="px-6 py-3.5">1.52</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Max Drawdown (%)</td>
+                <td class="px-6 py-3.5 font-semibold text-rose-400">-25.63%</td>
+                <td class="px-6 py-3.5 text-rose-400">-25.40%</td>
+                <td class="px-6 py-3.5 font-semibold text-rose-400">-26.78%</td>
+                <td class="px-6 py-3.5 text-rose-400">-26.66%</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Calmar Ratio</td>
+                <td class="px-6 py-3.5">0.82</td>
+                <td class="px-6 py-3.5">0.86</td>
+                <td class="px-6 py-3.5">0.81</td>
+                <td class="px-6 py-3.5">0.84</td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-6 py-3.5 font-medium">Total Overlay Trades</td>
+                <td class="px-6 py-3.5 font-semibold">691</td>
+                <td class="px-6 py-3.5">691</td>
+                <td class="px-6 py-3.5 font-semibold text-amber-400">732</td>
+                <td class="px-6 py-3.5">732</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Plateau & Ensemble Nodes -->
+    <div id="tab-ensemble" class="tab-content hidden space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Node 1 -->
+        <div class="bg-slate-900 border-2 border-emerald-500/50 rounded-2xl p-5 shadow-lg relative">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              #1 Ideal Centroid Peak
+            </span>
+            <span class="text-xs text-slate-400">Rank 1</span>
+          </div>
+          <div class="space-y-2">
+            <div class="text-3xl font-extrabold text-white">IBS: 0.10 → 0.70</div>
+            <div class="text-sm font-semibold text-cyan-400">Max Hold: 6 sessions</div>
+            <div class="border-t border-slate-800 pt-3 mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span class="text-slate-400">Plateau Score:</span>
+                <span class="font-bold text-emerald-400 ml-1">1.1300</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Adjusted Sharpe:</span>
+                <span class="font-bold text-slate-200 ml-1">1.2688</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Local Std:</span>
+                <span class="font-semibold text-slate-300 ml-1">0.0562</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Total Trades:</span>
+                <span class="font-semibold text-slate-300 ml-1">476</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 2 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 rounded text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+              #2 Extended Hold Node
+            </span>
+            <span class="text-xs text-slate-400">Rank 2</span>
+          </div>
+          <div class="space-y-2">
+            <div class="text-3xl font-extrabold text-white">IBS: 0.10 → 0.70</div>
+            <div class="text-sm font-semibold text-cyan-400">Max Hold: 8 sessions</div>
+            <div class="border-t border-slate-800 pt-3 mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span class="text-slate-400">Plateau Score:</span>
+                <span class="font-bold text-blue-400 ml-1">1.1147</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Adjusted Sharpe:</span>
+                <span class="font-bold text-slate-200 ml-1">1.2514</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Local Std:</span>
+                <span class="font-semibold text-slate-300 ml-1">0.0632</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Total Trades:</span>
+                <span class="font-semibold text-slate-300 ml-1">476</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 3 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg relative">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-2.5 py-1 rounded text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+              #3 Broader Dip Node
+            </span>
+            <span class="text-xs text-slate-400">Rank 3</span>
+          </div>
+          <div class="space-y-2">
+            <div class="text-3xl font-extrabold text-white">IBS: 0.15 → 0.70</div>
+            <div class="text-sm font-semibold text-cyan-400">Max Hold: 7 sessions</div>
+            <div class="border-t border-slate-800 pt-3 mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span class="text-slate-400">Plateau Score:</span>
+                <span class="font-bold text-purple-400 ml-1">1.0921</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Adjusted Sharpe:</span>
+                <span class="font-bold text-slate-200 ml-1">1.2180</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Local Std:</span>
+                <span class="font-semibold text-slate-300 ml-1">0.0711</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Total Trades:</span>
+                <span class="font-semibold text-slate-300 ml-1">647</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Rolling WFO Folds -->
+    <div id="tab-wfo" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+        <div class="p-5 border-b border-slate-800 flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-lg text-white">Rolling 5Y IS / 1Y OOS Walk-Forward Optimization</h3>
+            <p class="text-xs text-slate-400">15 Historical Out-of-Sample Folds (Track 1: Shock-Damped ADR)</p>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">WFE: 71.40%</span>
+        </div>
+        <div class="overflow-x-auto max-h-96">
+          <table class="w-full text-xs text-left">
+            <thead class="text-xs uppercase bg-slate-950/70 text-slate-400 sticky top-0 border-b border-slate-800">
+              <tr>
+                <th class="px-5 py-3 font-semibold">OOS Fold Period</th>
+                <th class="px-4 py-3 font-semibold">Best Entry</th>
+                <th class="px-4 py-3 font-semibold">Best Exit</th>
+                <th class="px-4 py-3 font-semibold">Best Hold</th>
+                <th class="px-4 py-3 font-semibold">IS Sharpe</th>
+                <th class="px-4 py-3 font-semibold">OOS Sharpe</th>
+                <th class="px-4 py-3 font-semibold">OOS Trades</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2011-02 to 2012-02</td><td>0.10</td><td>0.60</td><td>4</td><td>1.89</td>
+                <td class="font-bold text-rose-400">-0.47</td><td>25</td><td><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-400">Soft Drag</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2012-02 to 2013-02</td><td>0.10</td><td>0.60</td><td>3</td><td>1.40</td>
+                <td class="font-bold text-emerald-400">1.10</td><td>23</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2013-02 to 2014-02</td><td>0.10</td><td>0.50</td><td>3</td><td>1.71</td>
+                <td class="font-bold text-emerald-400">0.80</td><td>20</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2014-02 to 2015-02</td><td>0.10</td><td>0.60</td><td>5</td><td>1.44</td>
+                <td class="font-bold text-emerald-400">0.51</td><td>18</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2015-02 to 2016-02</td><td>0.20</td><td>0.80</td><td>7</td><td>1.38</td>
+                <td class="font-bold text-rose-400">-0.70</td><td>35</td><td><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-400">Chop Drag</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2016-02 to 2017-02</td><td>0.20</td><td>0.80</td><td>7</td><td>0.87</td>
+                <td class="font-bold text-emerald-400">1.36</td><td>25</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2017-02 to 2018-02</td><td>0.10</td><td>0.70</td><td>8</td><td>0.92</td>
+                <td class="font-bold text-emerald-400">1.75</td><td>13</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Strong Edge</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2018-02 to 2019-02</td><td>0.10</td><td>0.85</td><td>8</td><td>0.93</td>
+                <td class="font-bold text-emerald-400">1.46</td><td>19</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Vol Spike Alpha</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2019-02 to 2020-02</td><td>0.10</td><td>0.85</td><td>4</td><td>0.80</td>
+                <td class="font-bold text-emerald-400">1.08</td><td>19</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2020-02 to 2021-02</td><td>0.10</td><td>0.85</td><td>5</td><td>1.12</td>
+                <td class="font-bold text-emerald-400">2.82</td><td>28</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">COVID Cascade Recovery</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2021-02 to 2022-02</td><td>0.10</td><td>0.85</td><td>6</td><td>1.84</td>
+                <td class="font-bold text-emerald-400">1.29</td><td>25</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2022-02 to 2023-02</td><td>0.10</td><td>0.85</td><td>6</td><td>2.01</td>
+                <td class="font-bold text-emerald-400">0.81</td><td>25</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Bear Dip Alpha</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2023-02 to 2024-02</td><td>0.10</td><td>0.85</td><td>6</td><td>1.69</td>
+                <td class="font-bold text-emerald-400">2.06</td><td>25</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Strong Edge</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2024-02 to 2025-02</td><td>0.10</td><td>0.80</td><td>7</td><td>1.98</td>
+                <td class="font-bold text-emerald-400">1.39</td><td>23</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/40">
+                <td class="px-5 py-2.5 font-mono">2025-02 to 2026-02</td><td>0.10</td><td>0.70</td><td>7</td><td>1.79</td>
+                <td class="font-bold text-emerald-400">0.28</td><td>12</td><td><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Profit</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-emerald-500', 'text-emerald-400', 'bg-slate-900');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      const activeTab = document.getElementById(tabId);
+      if (activeTab) activeTab.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('border-emerald-500', 'text-emerald-400', 'bg-slate-900');
+        activeBtn.classList.remove('border-transparent', 'text-slate-400');
+      }
+    }
+  </script>
+</body>
+</html>
