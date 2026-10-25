@@ -712,6 +712,67 @@ def run_unified_overlay_strategy(
     return equity_df, trades_df
 
 
+def run_backtest(
+    df: pd.DataFrame,
+    initial_capital: float = 50000.0,
+    target_risk_pct: float = 0.0125,
+    ibs_entry: float = 0.10,
+    ibs_exit: float = 0.50,
+    ibs_max_hold: int = 5,
+    max_leverage: float = 2.0,
+    use_shock_damped_adr: bool = True,
+    use_cash_yield: bool = False,
+    cost_bps: float = 2.0,
+) -> dict:
+    """Unified backtest execution wrapper for optimization pipelines.
+
+    Executes both Strategy A (IBS Solo) and Combined 100/100 Overlay (A + B).
+    """
+    strat_a_eq, strat_a_tr = run_ibs_strategy(
+        df,
+        initial_capital=initial_capital,
+        risk_per_adr=target_risk_pct,
+        ibs_entry=ibs_entry,
+        ibs_exit=ibs_exit,
+        max_hold=ibs_max_hold,
+        use_effective_adr=use_shock_damped_adr,
+        use_floating_yield=use_cash_yield,
+        cost_bps=cost_bps,
+    )
+    strat_a_ret = strat_a_eq["equity"].pct_change().fillna(0.0)
+    strat_a_trades = len(strat_a_tr)
+    strat_a_wins = int((strat_a_tr["net_pnl"] > 0).sum()) if not strat_a_tr.empty else 0
+
+    combined_eq, combined_tr = run_unified_overlay_strategy(
+        df,
+        initial_capital=initial_capital,
+        risk_per_adr=target_risk_pct,
+        ibs_entry=ibs_entry,
+        ibs_exit=ibs_exit,
+        max_hold=ibs_max_hold,
+        max_leverage=max_leverage,
+        use_effective_adr=use_shock_damped_adr,
+        use_floating_yield=use_cash_yield,
+        cost_bps=cost_bps,
+    )
+    combined_ret = combined_eq["equity"].pct_change().fillna(0.0)
+    combined_trades = len(combined_tr)
+    combined_wins = int((combined_tr["net_pnl"] > 0).sum()) if not combined_tr.empty else 0
+
+    return {
+        "strat_a_eq": strat_a_eq,
+        "strat_a_tr": strat_a_tr,
+        "strat_a_ret": strat_a_ret,
+        "strat_a_trades": strat_a_trades,
+        "strat_a_wins": strat_a_wins,
+        "combined_eq": combined_eq,
+        "combined_tr": combined_tr,
+        "combined_ret": combined_ret,
+        "combined_trades": combined_trades,
+        "combined_wins": combined_wins,
+    }
+
+
 if __name__ == "__main__":
     from src.data_loader import load_us100_data
     from src.indicators import compute_indicators

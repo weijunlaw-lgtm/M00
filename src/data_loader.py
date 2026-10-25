@@ -114,6 +114,10 @@ def load_us100_data(
     return df
 
 
+# Alias for compatibility with external runner scripts
+fetch_or_load_data = load_us100_data
+
+
 if __name__ == "__main__":
     print("Testing data loader...")
     data = load_us100_data(force_refresh=True)

@@ -168,6 +168,10 @@ def calculate_metrics(
     }
 
 
+# Alias for compatibility with external runner scripts
+compute_metrics = calculate_metrics
+
+
 if __name__ == "__main__":
     from src.data_loader import load_us100_data
     from src.indicators import compute_indicators

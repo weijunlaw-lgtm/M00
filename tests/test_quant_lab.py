@@ -16,9 +16,16 @@ from src.backtester import (
     run_momentum_strategy,
     run_buy_and_hold,
     run_unified_overlay_strategy,
+    run_backtest,
 )
-from src.metrics import calculate_metrics
-from src.validation import run_regime_split_backtest, run_parameter_sensitivity_grid
+from src.metrics import calculate_metrics, compute_metrics
+from src.validation import (
+    run_regime_split_backtest,
+    run_parameter_sensitivity_grid,
+    compute_ibs_3d_tensor,
+    select_plateau_ensemble,
+    run_rolling_wfo_ablation,
+)
 
 
 def test_data_loader_cache():
@@ -238,6 +245,97 @@ def test_validation_split_and_grid():
     assert np.isfinite(grid_res["sharpe_matrix"].values).all()
 
 
+def test_run_backtest_wrapper():
+    """Verify unified run_backtest wrapper returns complete dual-stream dictionary."""
+    df = load_us100_data()
+    ind = compute_indicators(df)
+    valid = ind.dropna().iloc[-300:].copy()
+
+    res = run_backtest(valid, ibs_entry=0.10, ibs_exit=0.50, ibs_max_hold=5)
+    expected_keys = [
+        "strat_a_eq", "strat_a_tr", "strat_a_ret", "strat_a_trades", "strat_a_wins",
+        "combined_eq", "combined_tr", "combined_ret", "combined_trades", "combined_wins",
+    ]
+    for k in expected_keys:
+        assert k in res, f"Key {k} missing from run_backtest result"
+    assert len(res["strat_a_ret"]) == len(valid)
+    assert len(res["combined_ret"]) == len(valid)
+
+
+def test_plateau_tensor_and_ensemble():
+    """Verify 3D plateau tensor calculation and spatial ensemble selection."""
+    df = load_us100_data()
+    ind = compute_indicators(df)
+    valid = ind.dropna().iloc[-600:].copy()
+
+    entry_grid = [0.10, 0.20]
+    exit_grid = [0.50, 0.70]
+    hold_grid = [3, 5]
+
+    sr_t, tr_t = compute_ibs_3d_tensor(
+        valid, entry_grid, exit_grid, hold_grid,
+        target_risk_pct=0.0125, max_leverage=2.0, use_shock_damped_adr=True,
+    )
+    assert sr_t.shape == (2, 2, 2)
+    assert tr_t.shape == (2, 2, 2)
+
+    # Constraint check: 0.50 - 0.20 = 0.30 < 0.35 -> must be NaN
+    assert np.isnan(sr_t[1, 0, 0]), "Combinations violating exit - entry >= 0.35 must be NaN"
+    assert np.isnan(sr_t[1, 0, 1]), "Combinations violating exit - entry >= 0.35 must be NaN"
+
+    ensemble = select_plateau_ensemble(
+        sr_t, tr_t, entry_grid, exit_grid, hold_grid, top_k=2
+    )
+    assert len(ensemble) >= 1
+    assert "plateau_score" in ensemble[0]
+    assert "adjusted_sharpe" in ensemble[0]
+    assert ensemble[0]["rank"] == 1
+
+
+def test_rolling_wfo_ablation():
+    """Verify rolling WFO ablation returns proper fold counts and summary metrics."""
+    df = load_us100_data()
+    ind = compute_indicators(df)
+    valid = ind.dropna().iloc[-1600:].copy()
+
+    # Small slice: 5Y IS (1260) + 1Y OOS (252) = 1512 bars -> 1 fold
+    entry_grid = [0.10]
+    exit_grid = [0.60]
+    hold_grid = [5]
+
+    wfo_df, summary = run_rolling_wfo_ablation(
+        valid, entry_grid, exit_grid, hold_grid,
+        is_years=5, oos_years=1, target_risk_pct=0.0125,
+        use_shock_damped_adr=True,
+    )
+    assert len(wfo_df) >= 1
+    assert "is_sharpe" in wfo_df.columns
+    assert "oos_sharpe" in wfo_df.columns
+    assert "wfe_ratio" in summary
+    assert "mean_oos_sharpe" in summary
+
+
+def test_optimize_cli_artifacts():
+    """Verify that optimization JSON payload and Markdown report are valid."""
+    json_path = ROOT_DIR / "INFO" / "optimal_ibs_ablation.json"
+    md_path = ROOT_DIR / "INFO" / "OPTIMIZATION_SIDE_BY_SIDE_REPORT.md"
+
+    assert json_path.exists(), "optimal_ibs_ablation.json must exist"
+    assert md_path.exists(), "OPTIMIZATION_SIDE_BY_SIDE_REPORT.md must exist"
+
+    import json
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "SHOCK_DAMPED_ADR_ON" in data
+    assert "STANDARD_ADR_OFF" in data
+    assert "ideal_centroid_params" in data["SHOCK_DAMPED_ADR_ON"]
+    assert "stage2_performance" in data["SHOCK_DAMPED_ADR_ON"]
+
+    md_content = md_path.read_text(encoding="utf-8")
+    assert "## 2. Stage 1: Strategy A (IBS Solo) Optimization" in md_content
+    assert "## 3. Stage 2: Combined 100/100 Overlay" in md_content
+    assert "## 4. Automated Decision Gate" in md_content
+
+
 if __name__ == "__main__":
     print("Running v1.0-Restored test suites...")
     test_data_loader_cache()
@@ -258,4 +356,12 @@ if __name__ == "__main__":
     print("[OK] test_metrics_continuous_sortino passed")
     test_validation_split_and_grid()
     print("[OK] test_validation_split_and_grid passed")
-    print("\nAll 9 test suites PASSED successfully!")
+    test_run_backtest_wrapper()
+    print("[OK] test_run_backtest_wrapper passed")
+    test_plateau_tensor_and_ensemble()
+    print("[OK] test_plateau_tensor_and_ensemble passed")
+    test_rolling_wfo_ablation()
+    print("[OK] test_rolling_wfo_ablation passed")
+    test_optimize_cli_artifacts()
+    print("[OK] test_optimize_cli_artifacts passed")
+    print("\nAll 13 test suites PASSED successfully!")

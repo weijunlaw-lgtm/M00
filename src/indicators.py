@@ -105,6 +105,10 @@ def compute_indicators(df: pd.DataFrame, adr_window: int = 14) -> pd.DataFrame:
     return out
 
 
+# Alias for compatibility with external runner scripts
+precompute_indicators = compute_indicators
+
+
 if __name__ == "__main__":
     from src.data_loader import load_us100_data
 

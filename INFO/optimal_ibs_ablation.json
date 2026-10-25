@@ -1,0 +1,520 @@
+{
+  "SHOCK_DAMPED_ADR_ON": {
+    "use_shock_damped_adr": true,
+    "use_tbill_cash_yield": false,
+    "wfo_summary": {
+      "mean_is_sharpe": 1.4512,
+      "mean_oos_sharpe": 1.0362,
+      "wfe_ratio": 0.714,
+      "positive_oos_folds_pct": 86.67
+    },
+    "wfo_folds": [
+      {
+        "oos_period": "2011-02-02 to 2012-02-01",
+        "entry": 0.1,
+        "exit": 0.6,
+        "hold": 4,
+        "is_sharpe": 1.8926,
+        "oos_sharpe": -0.4677,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2012-02-02 to 2013-02-04",
+        "entry": 0.1,
+        "exit": 0.6,
+        "hold": 3,
+        "is_sharpe": 1.3984,
+        "oos_sharpe": 1.1027,
+        "oos_trades": 23
+      },
+      {
+        "oos_period": "2013-02-05 to 2014-02-04",
+        "entry": 0.1,
+        "exit": 0.5,
+        "hold": 3,
+        "is_sharpe": 1.7147,
+        "oos_sharpe": 0.8004,
+        "oos_trades": 20
+      },
+      {
+        "oos_period": "2014-02-05 to 2015-02-04",
+        "entry": 0.1,
+        "exit": 0.6,
+        "hold": 5,
+        "is_sharpe": 1.4444,
+        "oos_sharpe": 0.5057,
+        "oos_trades": 18
+      },
+      {
+        "oos_period": "2015-02-05 to 2016-02-04",
+        "entry": 0.2,
+        "exit": 0.8,
+        "hold": 7,
+        "is_sharpe": 1.3777,
+        "oos_sharpe": -0.701,
+        "oos_trades": 35
+      },
+      {
+        "oos_period": "2016-02-05 to 2017-02-03",
+        "entry": 0.2,
+        "exit": 0.8,
+        "hold": 7,
+        "is_sharpe": 0.8695,
+        "oos_sharpe": 1.3581,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2017-02-06 to 2018-02-05",
+        "entry": 0.1,
+        "exit": 0.7,
+        "hold": 8,
+        "is_sharpe": 0.9194,
+        "oos_sharpe": 1.7542,
+        "oos_trades": 13
+      },
+      {
+        "oos_period": "2018-02-06 to 2019-02-06",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 8,
+        "is_sharpe": 0.9339,
+        "oos_sharpe": 1.4606,
+        "oos_trades": 19
+      },
+      {
+        "oos_period": "2019-02-07 to 2020-02-06",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 4,
+        "is_sharpe": 0.7958,
+        "oos_sharpe": 1.0845,
+        "oos_trades": 19
+      },
+      {
+        "oos_period": "2020-02-07 to 2021-02-05",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 5,
+        "is_sharpe": 1.1235,
+        "oos_sharpe": 2.8173,
+        "oos_trades": 28
+      },
+      {
+        "oos_period": "2021-02-08 to 2022-02-04",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 6,
+        "is_sharpe": 1.839,
+        "oos_sharpe": 1.2875,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2022-02-07 to 2023-02-07",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 6,
+        "is_sharpe": 2.0098,
+        "oos_sharpe": 0.8098,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2023-02-08 to 2024-02-08",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 6,
+        "is_sharpe": 1.6868,
+        "oos_sharpe": 2.0593,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2024-02-09 to 2025-02-11",
+        "entry": 0.1,
+        "exit": 0.8,
+        "hold": 7,
+        "is_sharpe": 1.9779,
+        "oos_sharpe": 1.3935,
+        "oos_trades": 23
+      },
+      {
+        "oos_period": "2025-02-12 to 2026-02-12",
+        "entry": 0.1,
+        "exit": 0.7,
+        "hold": 7,
+        "is_sharpe": 1.7851,
+        "oos_sharpe": 0.278,
+        "oos_trades": 12
+      }
+    ],
+    "ideal_centroid_params": {
+      "rank": 1,
+      "ibs_entry": 0.1,
+      "ibs_exit": 0.7,
+      "max_hold": 6,
+      "plateau_score": 1.13,
+      "adjusted_sharpe": 1.2688,
+      "neighborhood_std": 0.0562,
+      "total_trades": 476
+    },
+    "top_3_ensemble_params": [
+      {
+        "rank": 1,
+        "ibs_entry": 0.1,
+        "ibs_exit": 0.7,
+        "max_hold": 6,
+        "plateau_score": 1.13,
+        "adjusted_sharpe": 1.2688,
+        "neighborhood_std": 0.0562,
+        "total_trades": 476
+      },
+      {
+        "rank": 2,
+        "ibs_entry": 0.1,
+        "ibs_exit": 0.7,
+        "max_hold": 8,
+        "plateau_score": 1.1211,
+        "adjusted_sharpe": 1.2569,
+        "neighborhood_std": 0.0639,
+        "total_trades": 472
+      },
+      {
+        "rank": 3,
+        "ibs_entry": 0.15,
+        "ibs_exit": 0.7,
+        "max_hold": 7,
+        "plateau_score": 1.1044,
+        "adjusted_sharpe": 1.2166,
+        "neighborhood_std": 0.0572,
+        "total_trades": 603
+      }
+    ],
+    "stage2_performance": {
+      "strategy_a_solo_ideal": {
+        "Total Return (%)": 672.57,
+        "CAGR (%)": 10.39,
+        "Annualized Volatility (%)": 8.05,
+        "Sharpe Ratio": 1.27,
+        "Sortino Ratio": 2.07,
+        "Max Drawdown (%)": -11.42,
+        "Calmar Ratio": 0.91,
+        "Total Trades": 476,
+        "Win Rate (%)": 73.95,
+        "Profit Factor": 2.35,
+        "Time in Market (%)": 20.41,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 0.18,
+        "Max Notional Leverage (x)": 2.4,
+        "Final Equity ($)": 77256.82
+      },
+      "strategy_a_solo_3x_ensemble": {
+        "Total Return (%)": 728.44,
+        "CAGR (%)": 10.76,
+        "Annualized Volatility (%)": 8.2,
+        "Sharpe Ratio": 1.29,
+        "Sortino Ratio": 2.1,
+        "Max Drawdown (%)": -12.17,
+        "Calmar Ratio": 0.88,
+        "Total Trades": 517,
+        "Win Rate (%)": 0.0,
+        "Profit Factor": 0.0,
+        "Time in Market (%)": 100.0,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 1.0,
+        "Max Notional Leverage (x)": 1.0,
+        "Final Equity ($)": 82844.36
+      },
+      "combined_ab_overlay_ideal": {
+        "Total Return (%)": 5107.21,
+        "CAGR (%)": 21.05,
+        "Annualized Volatility (%)": 20.35,
+        "Sharpe Ratio": 1.04,
+        "Sortino Ratio": 1.5,
+        "Max Drawdown (%)": -25.63,
+        "Calmar Ratio": 0.82,
+        "Total Trades": 691,
+        "Win Rate (%)": 70.48,
+        "Profit Factor": 2.19,
+        "Time in Market (%)": 89.18,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 0.99,
+        "Max Notional Leverage (x)": 2.0,
+        "Final Equity ($)": 520721.42
+      },
+      "combined_ab_overlay_3x_ensemble": {
+        "Total Return (%)": 5600.61,
+        "CAGR (%)": 21.59,
+        "Annualized Volatility (%)": 20.52,
+        "Sharpe Ratio": 1.06,
+        "Sortino Ratio": 1.53,
+        "Max Drawdown (%)": -26.78,
+        "Calmar Ratio": 0.81,
+        "Total Trades": 732,
+        "Win Rate (%)": 0.0,
+        "Profit Factor": 0.0,
+        "Time in Market (%)": 100.0,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 1.0,
+        "Max Notional Leverage (x)": 1.0,
+        "Final Equity ($)": 570060.95
+      }
+    }
+  },
+  "STANDARD_ADR_OFF": {
+    "use_shock_damped_adr": false,
+    "use_tbill_cash_yield": false,
+    "wfo_summary": {
+      "mean_is_sharpe": 1.4658,
+      "mean_oos_sharpe": 1.0197,
+      "wfe_ratio": 0.6956,
+      "positive_oos_folds_pct": 86.67
+    },
+    "wfo_folds": [
+      {
+        "oos_period": "2011-02-02 to 2012-02-01",
+        "entry": 0.1,
+        "exit": 0.6,
+        "hold": 4,
+        "is_sharpe": 1.9164,
+        "oos_sharpe": -0.565,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2012-02-02 to 2013-02-04",
+        "entry": 0.1,
+        "exit": 0.5,
+        "hold": 3,
+        "is_sharpe": 1.4898,
+        "oos_sharpe": 1.2003,
+        "oos_trades": 23
+      },
+      {
+        "oos_period": "2013-02-05 to 2014-02-04",
+        "entry": 0.1,
+        "exit": 0.5,
+        "hold": 3,
+        "is_sharpe": 1.7386,
+        "oos_sharpe": 0.9154,
+        "oos_trades": 20
+      },
+      {
+        "oos_period": "2014-02-05 to 2015-02-04",
+        "entry": 0.1,
+        "exit": 0.6,
+        "hold": 5,
+        "is_sharpe": 1.4263,
+        "oos_sharpe": 0.4942,
+        "oos_trades": 18
+      },
+      {
+        "oos_period": "2015-02-05 to 2016-02-04",
+        "entry": 0.2,
+        "exit": 0.8,
+        "hold": 7,
+        "is_sharpe": 1.407,
+        "oos_sharpe": -0.7725,
+        "oos_trades": 35
+      },
+      {
+        "oos_period": "2016-02-05 to 2017-02-03",
+        "entry": 0.2,
+        "exit": 0.8,
+        "hold": 7,
+        "is_sharpe": 0.851,
+        "oos_sharpe": 1.4003,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2017-02-06 to 2018-02-05",
+        "entry": 0.1,
+        "exit": 0.7,
+        "hold": 8,
+        "is_sharpe": 0.9545,
+        "oos_sharpe": 1.8905,
+        "oos_trades": 13
+      },
+      {
+        "oos_period": "2018-02-06 to 2019-02-06",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 8,
+        "is_sharpe": 0.9602,
+        "oos_sharpe": 1.4871,
+        "oos_trades": 19
+      },
+      {
+        "oos_period": "2019-02-07 to 2020-02-06",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 3,
+        "is_sharpe": 0.8577,
+        "oos_sharpe": 0.9459,
+        "oos_trades": 20
+      },
+      {
+        "oos_period": "2020-02-07 to 2021-02-05",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 5,
+        "is_sharpe": 1.1664,
+        "oos_sharpe": 2.5693,
+        "oos_trades": 28
+      },
+      {
+        "oos_period": "2021-02-08 to 2022-02-04",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 6,
+        "is_sharpe": 1.8853,
+        "oos_sharpe": 1.2909,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2022-02-07 to 2023-02-07",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 6,
+        "is_sharpe": 2.0267,
+        "oos_sharpe": 0.6957,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2023-02-08 to 2024-02-08",
+        "entry": 0.1,
+        "exit": 0.85,
+        "hold": 6,
+        "is_sharpe": 1.6469,
+        "oos_sharpe": 2.1144,
+        "oos_trades": 25
+      },
+      {
+        "oos_period": "2024-02-09 to 2025-02-11",
+        "entry": 0.1,
+        "exit": 0.8,
+        "hold": 7,
+        "is_sharpe": 1.9255,
+        "oos_sharpe": 1.1839,
+        "oos_trades": 23
+      },
+      {
+        "oos_period": "2025-02-12 to 2026-02-12",
+        "entry": 0.1,
+        "exit": 0.7,
+        "hold": 7,
+        "is_sharpe": 1.7352,
+        "oos_sharpe": 0.4449,
+        "oos_trades": 12
+      }
+    ],
+    "ideal_centroid_params": {
+      "rank": 1,
+      "ibs_entry": 0.1,
+      "ibs_exit": 0.7,
+      "max_hold": 6,
+      "plateau_score": 1.1251,
+      "adjusted_sharpe": 1.2586,
+      "neighborhood_std": 0.0543,
+      "total_trades": 476
+    },
+    "top_3_ensemble_params": [
+      {
+        "rank": 1,
+        "ibs_entry": 0.1,
+        "ibs_exit": 0.7,
+        "max_hold": 6,
+        "plateau_score": 1.1251,
+        "adjusted_sharpe": 1.2586,
+        "neighborhood_std": 0.0543,
+        "total_trades": 476
+      },
+      {
+        "rank": 2,
+        "ibs_entry": 0.1,
+        "ibs_exit": 0.7,
+        "max_hold": 8,
+        "plateau_score": 1.1155,
+        "adjusted_sharpe": 1.2484,
+        "neighborhood_std": 0.0626,
+        "total_trades": 472
+      },
+      {
+        "rank": 3,
+        "ibs_entry": 0.15,
+        "ibs_exit": 0.7,
+        "max_hold": 7,
+        "plateau_score": 1.1035,
+        "adjusted_sharpe": 1.2138,
+        "neighborhood_std": 0.0564,
+        "total_trades": 603
+      }
+    ],
+    "stage2_performance": {
+      "strategy_a_solo_ideal": {
+        "Total Return (%)": 772.13,
+        "CAGR (%)": 11.04,
+        "Annualized Volatility (%)": 8.62,
+        "Sharpe Ratio": 1.26,
+        "Sortino Ratio": 2.07,
+        "Max Drawdown (%)": -12.79,
+        "Calmar Ratio": 0.86,
+        "Total Trades": 476,
+        "Win Rate (%)": 73.95,
+        "Profit Factor": 2.39,
+        "Time in Market (%)": 20.41,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 0.19,
+        "Max Notional Leverage (x)": 2.4,
+        "Final Equity ($)": 87213.3
+      },
+      "strategy_a_solo_3x_ensemble": {
+        "Total Return (%)": 840.42,
+        "CAGR (%)": 11.44,
+        "Annualized Volatility (%)": 8.78,
+        "Sharpe Ratio": 1.28,
+        "Sortino Ratio": 2.09,
+        "Max Drawdown (%)": -13.63,
+        "Calmar Ratio": 0.84,
+        "Total Trades": 517,
+        "Win Rate (%)": 0.0,
+        "Profit Factor": 0.0,
+        "Time in Market (%)": 100.0,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 1.0,
+        "Max Notional Leverage (x)": 1.0,
+        "Final Equity ($)": 94041.52
+      },
+      "combined_ab_overlay_ideal": {
+        "Total Return (%)": 5742.72,
+        "CAGR (%)": 21.73,
+        "Annualized Volatility (%)": 21.13,
+        "Sharpe Ratio": 1.04,
+        "Sortino Ratio": 1.5,
+        "Max Drawdown (%)": -25.4,
+        "Calmar Ratio": 0.86,
+        "Total Trades": 691,
+        "Win Rate (%)": 70.48,
+        "Profit Factor": 2.25,
+        "Time in Market (%)": 89.18,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 1.01,
+        "Max Notional Leverage (x)": 2.0,
+        "Final Equity ($)": 584271.88
+      },
+      "combined_ab_overlay_3x_ensemble": {
+        "Total Return (%)": 6301.58,
+        "CAGR (%)": 22.27,
+        "Annualized Volatility (%)": 21.31,
+        "Sharpe Ratio": 1.05,
+        "Sortino Ratio": 1.52,
+        "Max Drawdown (%)": -26.66,
+        "Calmar Ratio": 0.84,
+        "Total Trades": 732,
+        "Win Rate (%)": 0.0,
+        "Profit Factor": 0.0,
+        "Time in Market (%)": 100.0,
+        "Cumulative Interest Earned ($)": 0.0,
+        "Average Notional Leverage (x)": 1.0,
+        "Max Notional Leverage (x)": 1.0,
+        "Final Equity ($)": 640157.73
+      }
+    }
+  }
+}
